@@ -52,7 +52,8 @@ namespace TimezonesAPI.Business
 
         public async Task<TimezoneResponseModel> GetById(string id)
         {
-            Timezone timezone = await _timezoneRepository.GetById(id);
+            List<Timezone> timezones = await _timezoneRepository.GetAll();
+            Timezone timezone = timezones.Where(item => item.id.Equals(id)).FirstOrDefault();
 
             var timezoneResponseModel = new TimezoneResponseModel()
             {
@@ -76,7 +77,8 @@ namespace TimezonesAPI.Business
         public async Task<TimezoneResponseModelPagination> GetByName(string name, int page = 1, int size = 9)
         {
             name = name == null ? string.Empty : name;
-            List<Timezone> timezones = await _timezoneRepository.GetByName(name);
+            List<Timezone> timezones = await _timezoneRepository.GetAll();
+            timezones = timezones.Where(timezone => timezone.name.ToLower().Contains(name)).ToList();
             int totalRecord = timezones.Count;
             int totalPages = totalRecord % size != 0 ? totalRecord / size + 1 : totalRecord / size;
             var timezoneResponseModels = new List<TimezoneResponseModel>();
